@@ -12,6 +12,7 @@
   "license": "ISC",
   "dependencies": {
     "electron": "^24.0.0",
+    "robotjs": "^0.6.0",
     "screenshot-desktop": "^0.0.0-development",
     "socket.io-client": "^4.6.1",
     "uuid": "^9.0.0"
