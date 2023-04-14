@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bozon||Control Remotely</title>
+</head>
+<body>
+     <h1>Welcome</h1>
+     <h1 id="roomId"><%=name%></h1>
+     <div>
+        <form action="/auth/logout"    method="post">
+            <button type="submit" class="btn btn-secondary mx-2 my-1">Logout</button>
+       </form>
+     </div>
+    <img style="width:1920px;height:1080px;margin-top: 5%;margin-left: 5%"/>
+    
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.4/socket.io.js" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-migrate-3.0.0.min.js"></script>
+
+    <script>
+         
+        window.onload=function(){
+           var roomId=document.getElementById('roomId').innerText
+           
+           
+           var room=roomId
+            if(room.trim().length==0){
+                 document.write("<h1>Room ID is mandatory to join...</h1>")
+                 return;
+            }
+            socket=io.connect('http://10.36.3.35')
+            socket.emit('join-message',room)
+            
+            socket.on('screen-data',(message)=>{
+                $("img").attr("src","data:image/png;base64,"+message)
+
+            })
+            $("img").mousemove((e)=>{
+                  var posX=$(this).offset().left;
+                  var posY=$(this).offset().top;
+                  var x=e.pageX-posX
+                  var y=e.pageY-posY;
+                  var obj={"x":x,"y":y,"room":room};
+                  socket.emit("mouse-move",JSON.stringify(obj))
+
+            })
+            $("img").click((e)=>{
+                var obj={"room":room}
+                socket.emit("mouse-click",JSON.stringify(obj))
+            })
+            $(window).bind("keyup",(e)=>{
+                var obj={"key":e.key,"room":room}
+                socket.emit("type",JSON.stringify(obj))
+
+            })
+        }
+    </script>
+</body>
+</html>
